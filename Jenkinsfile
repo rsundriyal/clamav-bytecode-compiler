@@ -12,7 +12,7 @@ properties(
                        defaultValue: '1.0',
                        description: 'bcc version string'),
                 string(name: 'FRAMEWORK_BRANCH',
-                       defaultValue: '0.105',
+                       defaultValue: '0.104',
                        description: 'test-framework branch'),
                 string(name: 'BUILD_BRANCH',
                        defaultValue: 'master',
@@ -32,8 +32,7 @@ properties(
     ]
 )
 
-def buildResult_build_job
-def buildResult_test_job
+def buildResult
 
 node('master') {
 
@@ -50,7 +49,7 @@ node('master') {
 
         archiveArtifacts artifacts: 'bcc_source.tar.gz'
 
-        buildResult_build_job = build(job: "${params.TEST_PIPELINE_PATH}${params.BUILD_BRANCH}",
+        buildResult = build(job: "${params.TEST_PIPELINE_PATH}${params.BUILD_BRANCH}",
             propagate: true,
             wait: true,
             parameters: [
@@ -62,22 +61,20 @@ node('master') {
                 [$class: 'StringParameterValue', name: 'SHARED_LIB_BRANCH', value: "${params.SHARED_LIB_BRANCH}"]
             ]
         )
-        echo "${params.TEST_PIPELINE_PATH}${params.BUILD_BRANCH} #${buildResult_build_job.number} succeeded."
+        echo "${params.TEST_PIPELINE_PATH}${params.BUILD_BRANCH} #${buildResult.number} succeeded."
     }
 
     stage('Test-BCC') {
-        buildResult_test_job = build(job: "${params.TEST_PIPELINE_PATH}${params.TESTS_BRANCH}",
+        buildResult = build(job: "${params.TEST_PIPELINE_PATH}${params.TESTS_BRANCH}",
             propagate: true,
             wait: true,
             parameters: [
                 [$class: 'StringParameterValue', name: 'TESTS_BRANCH', value: "${params.TESTS_BRANCH}"],
-                [$class: 'StringParameterValue', name: 'BUILD_JOB_NAME', value: "${params.TEST_PIPELINE_PATH}${params.BUILD_BRANCH}"],
-                [$class: 'StringParameterValue', name: 'BUILD_JOB_NUMBER', value: "${buildResult_build_job.number}"],
                 [$class: 'StringParameterValue', name: 'FRAMEWORK_BRANCH', value: "${params.FRAMEWORK_BRANCH}"],
                 [$class: 'StringParameterValue', name: 'VERSION', value: "${params.VERSION}"],
                 [$class: 'StringParameterValue', name: 'SHARED_LIB_BRANCH', value: "${params.SHARED_LIB_BRANCH}"]
             ]
         )
-        echo "${params.TEST_PIPELINE_PATH}/${params.TESTS_BRANCH} #${buildResult_test_job.number} succeeded."
+        echo "${params.TEST_PIPELINE_PATH}/${params.TESTS_BRANCH} #${buildResult.number} succeeded."
     }
 }
