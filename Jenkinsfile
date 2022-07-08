@@ -12,7 +12,7 @@ properties(
                        defaultValue: '1.0',
                        description: 'bcc version string'),
                 string(name: 'FRAMEWORK_BRANCH',
-                       defaultValue: '0.104',
+                       defaultValue: '1.0',
                        description: 'test-framework branch'),
                 string(name: 'BUILD_BRANCH',
                        defaultValue: 'master',
