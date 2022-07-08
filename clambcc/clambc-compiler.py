@@ -493,7 +493,7 @@ def createInputSourceFile(clangLLVM: ClangLLVM, name: str, args: list, options: 
 
 def optimize(clangLLVM: ClangLLVM, inFile: str, outFile: str, sigFile: str, inputSourceFile: str, standardCompiler: bool) -> int:
 
-    internalizeAPIList = "_Z10entrypointv,entrypoint,__clambc_kind,__clambc_virusname_prefix,__clambc_virusnames,__clambc_filesize,__clambc_match_counts,__clambc_match_offsets,__clambc_pedata"
+    internalizeAPIList = "_Z10entrypointv,entrypoint,__clambc_kind,__clambc_virusname_prefix,__clambc_virusnames,__clambc_filesize,__clambc_match_counts,__clambc_match_offsets,__clambc_pedata,__Copyright"
     if standardCompiler:
         internalizeAPIList += ",main"
 
@@ -513,6 +513,7 @@ def optimize(clangLLVM: ClangLLVM, inFile: str, outFile: str, sigFile: str, inpu
           f' -clambc-preserve-abis' #remove fake function calls because O3 has already run
           f' -clambc-remove-pointer-phis'
           f' -dce'
+          f' -disable-loop-unrolling'
           f' -disable-loop-vectorization'
           f' -disable-slp-vectorization'
           f' -globaldce'
@@ -547,7 +548,6 @@ def optimize(clangLLVM: ClangLLVM, inFile: str, outFile: str, sigFile: str, inpu
           f' -clambc-verifier'
           f' -verify'
           f' -strip-debug-declare'
-          f' -clambc-gepsplitter-placeholder'
           f' -clambc-lowering-final'
           f' -clambc-trace'
           f' -dce'
@@ -792,8 +792,7 @@ def main():
     (options, args) = parser.parse_args()
 
     if options.version:
-        #TODO: determine the version by calling into libclambcc.so
-        print('ClamBC-Compiler 0.103.1')
+        print('ClamBC-Compiler @PACKAGE_VERSION@')
         sys.exit(0)
 
 
